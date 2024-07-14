@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vocabulary Trainer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #custom-top-band {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 1000;
+        }
+        #custom-top-band button {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        #content {
+            height: calc(100vh - 30px);
+            width: 100%;
+            border: none;
+            margin-top: 30px;
+        }
+        #settings-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div id="custom-top-band">
+        <button onclick="openSettings()">⚙️ Settings</button>
+        <div>
+            <button onclick="minimizeApp()">―</button>
+            <button onclick="maximizeApp()">□</button>
+            <button onclick="closeApp()">✕</button>
+        </div>
+    </div>
+    <iframe id="content"></iframe>
+    <div id="settings-modal">
+        <h2>Settings</h2>
+        <div>
+            <label for="reminder-frequency">Reminder Frequency (minutes):</label>
+            <input type="number" id="reminder-frequency" min="15" value="60">
+        </div>
+        <div>
+            <input type="checkbox" id="minimize-to-tray">
+            <label for="minimize-to-tray">Minimize to System Tray</label>
+        </div>
+        <button onclick="login()">Login</button>
+        <button onclick="logout()">Logout</button>
+        <button onclick="saveSettings()">Save Settings</button>
+        <button onclick="closeSettings()">Close</button>
+    </div>
+    <script>
+        function minimizeApp() {
+            window.electronAPI.minimizeApp();
+        }
+
+        function maximizeApp() {
+            window.electronAPI.maximizeApp();
+        }
+
+        function closeApp() {
+            window.electronAPI.closeApp();
+        }
+
+        function openSettings() {
+            document.getElementById('settings-modal').style.display = 'block';
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function login() {
+            window.electronAPI.login();
+            closeSettings();
+        }
+
+        function logout() {
+            window.electronAPI.logout();
+            closeSettings();
+        }
+
+        function saveSettings() {
+            const frequency = document.getElementById('reminder-frequency').value;
+            const minimizeToTray = document.getElementById('minimize-to-tray').checked;
+            window.electronAPI.setReminderFrequency(parseInt(frequency));
+            window.electronAPI.setMinimizeToTray(minimizeToTray);
+            closeSettings();
+        }
+
+        window.electronAPI.onLoadVocabTrainer((event, url) => {
+            document.getElementById('content').src = url;
+        });
+    </script>
+</body>
+</html>
